@@ -1,6 +1,15 @@
 import axios from "axios";
-import React, { useContext, useEffect, useReducer } from "react";
+import React, { useContext, useReducer } from "react";
 import reducer from "./reducer";
+import {
+  SET_LOADING,
+  SET_WAITING,
+  SET_QUESTIONS,
+  NEXT_QUESTION,
+  CHECK_ANSWER,
+  CLOSE_MODAL,
+  HANDLE_CHANGE,
+} from "./actions";
 
 //TODO: encoding questions
 //TODO: adding session token
@@ -41,42 +50,35 @@ const AppProvider = ({ children }) => {
 
   const handleChange = (e) => {
     dispatch({
-      type: "HANDLE_CHANGE",
+      type: HANDLE_CHANGE,
       payload: { name: e.target.name, value: e.target.value },
     });
   };
 
   const closeModal = () => {
-    dispatch({ type: "CLOSE_MODAL" });
+    dispatch({ type: CLOSE_MODAL });
   };
 
   const checkAnswer = (answer, question) => {
-    dispatch({ type: "CHECK_ANSWER", payload: { answer, question } });
+    dispatch({ type: CHECK_ANSWER, payload: { answer, question } });
   };
 
   const nextQuestion = () => {
-    dispatch({ type: "NEXT_QUESTION" });
+    dispatch({ type: NEXT_QUESTION });
   };
 
   const fetchQuestions = async (url) => {
-    dispatch({ type: "SET_LOADING" });
-    dispatch({ type: "SET_WAITING" });
+    dispatch({ type: SET_LOADING });
+    dispatch({ type: SET_WAITING });
     try {
       const { data } = await axios(url);
       console.log(data, data.results);
       //TODO: checking response code
-      dispatch({ type: "SET_QUESTIONS", payload: data.results });
+      dispatch({ type: SET_QUESTIONS, payload: data.results });
     } catch (error) {
       console.log(error);
     }
   };
-
-  // useEffect(() => {
-
-  //   //TODO: fetching with axios
-
-  //   console.log("context invoked");
-  // }, []);
 
   return (
     <AppContext.Provider

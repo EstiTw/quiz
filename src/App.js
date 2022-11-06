@@ -23,13 +23,13 @@ function App() {
       </main>
     );
   if (isLoading) return <Loading />;
-  if (isModalOpen) return <Modal />;
 
   const { question, correct_answer, incorrect_answers } = questions[index];
   //TODO:  randomize correct answer
   const optionalAnswers = [correct_answer, ...incorrect_answers];
   return (
     <main>
+      {isModalOpen && <Modal />}
       <section className="quiz">
         <div className="container">
           <p className="correct-answers">
