@@ -4,24 +4,45 @@ const reducer = (state, action) => {
       return { ...state, isLoading: true };
     case "SET_QUESTIONS":
       return { ...state, isLoading: false, questions: action.payload };
-    case "HANDLE_NEXT": {
-      return { ...state, currentQuestion: state.currentQuestion + 1 };
+    case "NEXT_QUESTION": {
+      let nextQuestion = state.currentQuestion + 1;
+      if (nextQuestion === state.amount)
+        return { ...state, currentQuestion: nextQuestion, isModalOpen: true };
+      return { ...state, currentQuestion: nextQuestion };
     }
-    case "HANDLE_ANSWER": {
+    case "CHECK_ANSWER": {
       const { correct_answer } = state.questions.find(
         (question) => question.question === action.payload.question
       );
-      const currectAnswersAmount =
+      const correctAnswersAmount =
         action.payload.answer === correct_answer
-          ? state.currectAnswers + 1
-          : state.currectAnswers;
+          ? state.correctAnswers + 1
+          : state.correctAnswers;
+
+      let nextQuestion = state.currentQuestion + 1;
+      if (nextQuestion === state.amount)
+        return {
+          ...state,
+          currentQuestion: nextQuestion,
+          correctAnswers: correctAnswersAmount,
+          isModalOpen: true,
+        };
 
       return {
         ...state,
-        currentQuestion: state.currentQuestion + 1,
-        currectAnswers: currectAnswersAmount,
+        currentQuestion: nextQuestion,
+        correctAnswers: correctAnswersAmount,
       };
     }
+    case "CLOSE_MODAL":
+      return {
+        ...state,
+        isModalOpen: false,
+        currentQuestion: 0,
+        correctAnswers: 0,
+      };
+    default:
+      throw new Error(`no matching ${action.type} action type`);
   }
 };
 

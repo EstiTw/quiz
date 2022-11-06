@@ -7,26 +7,27 @@ import Modal from "./Modal";
 function App() {
   const {
     isLoading,
+    isModalOpen,
     questions,
     currentQuestion,
-    currectAnswers,
-    handleNext,
-    handleAnswer,
-    amount,
+    correctAnswers,
+    nextQuestion,
+    checkAnswer,
   } = useGlobalContext();
 
   if (isLoading) return <Loading />;
-  if (currentQuestion === amount) return <Modal />;
+  if (isModalOpen) return <Modal />;
 
   const { question, correct_answer, incorrect_answers } =
     questions[currentQuestion];
+  //TODO:  randomize correct answer
   const optionalAnswers = [correct_answer, ...incorrect_answers];
   return (
     <main>
       <section className="quiz">
         <div className="container">
           <p className="correct-answers">
-            correct answers: {currectAnswers}/{currentQuestion}
+            correct answers: {correctAnswers}/{currentQuestion}
           </p>
           <h2>{question}</h2>
           <div>
@@ -34,13 +35,13 @@ function App() {
               <button
                 className="answer-btn"
                 key={index}
-                onClick={() => handleAnswer(answer, question)}
+                onClick={() => checkAnswer(answer, question)}
               >
                 {answer}
               </button>
             ))}
           </div>
-          <button className="next-question" onClick={handleNext}>
+          <button className="next-question" onClick={nextQuestion}>
             next question
           </button>
         </div>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useContext, useEffect, useReducer } from "react";
+import React, { useContext, useEffect, useReducer } from "react";
 import reducer from "./reducer";
 
 const table = {
@@ -16,9 +16,10 @@ const initializeState = {
   isLoading: true,
   questions: [],
   amount: 3,
-  category: 21,
+  category: table.sports,
   currentQuestion: 0,
-  currectAnswers: 0,
+  correctAnswers: 0,
+  isModalOpen: false,
 };
 
 const AppContext = React.createContext();
@@ -26,13 +27,16 @@ const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initializeState);
 
-  const handleAnswer = (answer, question) => {
-    // console.log("handleAnswer", answer);
-    dispatch({ type: "HANDLE_ANSWER", payload: { answer, question } });
+  const closeModal = () => {
+    dispatch({ type: "CLOSE_MODAL" });
   };
 
-  const handleNext = () => {
-    dispatch({ type: "HANDLE_NEXT" });
+  const checkAnswer = (answer, question) => {
+    dispatch({ type: "CHECK_ANSWER", payload: { answer, question } });
+  };
+
+  const nextQuestion = () => {
+    dispatch({ type: "NEXT_QUESTION" });
   };
 
   const fetchQuestions = async (url) => {
@@ -41,6 +45,7 @@ const AppProvider = ({ children }) => {
       const response = await fetch(url);
       const data = await response.json();
       // console.log(data, data.results);
+      //TODO: checking response Code
       dispatch({ type: "SET_QUESTIONS", payload: data.results });
     } catch (error) {
       console.log(error);
@@ -48,13 +53,16 @@ const AppProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    //encoding
+    //TODO: encoding questions
+    //TODO: fetching with axios
     const url = `${API_ENDPOINT}amount=${state.amount}&category=${state.category}`;
     fetchQuestions(url);
   }, []);
 
   return (
-    <AppContext.Provider value={{ ...state, handleNext, handleAnswer }}>
+    <AppContext.Provider
+      value={{ ...state, nextQuestion, checkAnswer, closeModal }}
+    >
       {children}
     </AppContext.Provider>
   );
