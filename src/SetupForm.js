@@ -2,12 +2,12 @@ import React from "react";
 import { useGlobalContext } from "./context";
 
 const SetupForm = () => {
-  const { table, quiz, handleChange } = useGlobalContext();
+  const { table, quiz, handleChange, handleSubmit } = useGlobalContext();
 
   return (
-    <section className="quiz quiz-small ">
+    <section className="quiz quiz-small">
       <h2>setup quiz</h2>
-      <form className="setup-form">
+      <form className="setup-form" onSubmit={(e) => handleSubmit(e)}>
         <div className="form-control">
           <label htmlFor="amount">number of questions</label>
           <input
@@ -50,7 +50,9 @@ const SetupForm = () => {
             <option value="hard">hard</option>
           </select>
         </div>
-        <button className="submit-btn">start</button>
+        <button className="submit-btn" onClick={(e) => handleSubmit(e)}>
+          start
+        </button>
       </form>
     </section>
   );

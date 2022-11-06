@@ -2,6 +2,9 @@ import axios from "axios";
 import React, { useContext, useEffect, useReducer } from "react";
 import reducer from "./reducer";
 
+//TODO: encoding questions
+//TODO: adding session token
+
 const table = {
   sports: 21,
   history: 23,
@@ -10,25 +13,31 @@ const table = {
 
 const API_ENDPOINT = "https://opentdb.com/api.php?";
 
-// const url = "";
-
 const initializeState = {
   isLoading: true,
+  waiting: true,
+  isModalOpen: false,
   questions: [],
   quiz: {
-    amount: 10,
+    amount: 3,
     category: "sports",
     difficulty: "easy",
   },
-  currentQuestion: 0,
-  correctAnswers: 0,
-  isModalOpen: false,
+  index: 0,
+  correct: 0,
 };
 
 const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initializeState);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { amount, category, difficulty } = state.quiz;
+    const url = `${API_ENDPOINT}amount=${amount}&difficulty=${difficulty}&category=${table[category]}&type=multiple`;
+    fetchQuestions(url);
+  };
 
   const handleChange = (e) => {
     dispatch({
@@ -51,9 +60,10 @@ const AppProvider = ({ children }) => {
 
   const fetchQuestions = async (url) => {
     dispatch({ type: "SET_LOADING" });
+    dispatch({ type: "SET_WAITING" });
     try {
       const { data } = await axios(url);
-      // console.log(data, data.results);
+      console.log(data, data.results);
       //TODO: checking response code
       dispatch({ type: "SET_QUESTIONS", payload: data.results });
     } catch (error) {
@@ -61,13 +71,12 @@ const AppProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    //TODO: encoding questions
-    //TODO: adding session token
-    //TODO: fetching with axios
-    const url = `${API_ENDPOINT}amount=${state.amount}&category=${state.category}&dificulty=${state.dificulty}`;
-    fetchQuestions(url);
-  }, []);
+  // useEffect(() => {
+
+  //   //TODO: fetching with axios
+
+  //   console.log("context invoked");
+  // }, []);
 
   return (
     <AppContext.Provider
@@ -78,6 +87,7 @@ const AppProvider = ({ children }) => {
         closeModal,
         table,
         handleChange,
+        handleSubmit,
       }}
     >
       {children}

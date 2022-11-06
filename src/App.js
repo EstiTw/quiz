@@ -7,25 +7,25 @@ import Modal from "./Modal";
 function App() {
   const {
     isLoading,
+    waiting,
     isModalOpen,
     questions,
-    currentQuestion,
-    correctAnswers,
+    index,
+    correct,
     nextQuestion,
     checkAnswer,
   } = useGlobalContext();
 
-  return (
-    <main>
-      <SetupForm />
-    </main>
-  );
-
+  if (waiting)
+    return (
+      <main>
+        <SetupForm />
+      </main>
+    );
   if (isLoading) return <Loading />;
   if (isModalOpen) return <Modal />;
 
-  const { question, correct_answer, incorrect_answers } =
-    questions[currentQuestion];
+  const { question, correct_answer, incorrect_answers } = questions[index];
   //TODO:  randomize correct answer
   const optionalAnswers = [correct_answer, ...incorrect_answers];
   return (
@@ -33,7 +33,7 @@ function App() {
       <section className="quiz">
         <div className="container">
           <p className="correct-answers">
-            correct answers: {correctAnswers}/{currentQuestion}
+            correct answers: {correct}/{index}
           </p>
           <h2>{question}</h2>
           <div>
