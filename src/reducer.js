@@ -41,6 +41,10 @@ const reducer = (state, action) => {
         currentQuestion: 0,
         correctAnswers: 0,
       };
+    case "HANDLE_CHANGE": {
+      const { name, value } = action.payload;
+      return { ...state, quiz: { ...state.quiz, [name]: value } };
+    }
     default:
       throw new Error(`no matching ${action.type} action type`);
   }

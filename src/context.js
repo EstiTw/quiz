@@ -10,13 +10,16 @@ const table = {
 
 const API_ENDPOINT = "https://opentdb.com/api.php?";
 
-const url = "";
+// const url = "";
 
 const initializeState = {
   isLoading: true,
   questions: [],
-  amount: 3,
-  category: table.sports,
+  quiz: {
+    amount: 10,
+    category: "sports",
+    difficulty: "easy",
+  },
   currentQuestion: 0,
   correctAnswers: 0,
   isModalOpen: false,
@@ -26,6 +29,13 @@ const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initializeState);
+
+  const handleChange = (e) => {
+    dispatch({
+      type: "HANDLE_CHANGE",
+      payload: { name: e.target.name, value: e.target.value },
+    });
+  };
 
   const closeModal = () => {
     dispatch({ type: "CLOSE_MODAL" });
@@ -42,10 +52,9 @@ const AppProvider = ({ children }) => {
   const fetchQuestions = async (url) => {
     dispatch({ type: "SET_LOADING" });
     try {
-      const response = await fetch(url);
-      const data = await response.json();
+      const { data } = await axios(url);
       // console.log(data, data.results);
-      //TODO: checking response Code
+      //TODO: checking response code
       dispatch({ type: "SET_QUESTIONS", payload: data.results });
     } catch (error) {
       console.log(error);
@@ -54,14 +63,22 @@ const AppProvider = ({ children }) => {
 
   useEffect(() => {
     //TODO: encoding questions
+    //TODO: adding session token
     //TODO: fetching with axios
-    const url = `${API_ENDPOINT}amount=${state.amount}&category=${state.category}`;
+    const url = `${API_ENDPOINT}amount=${state.amount}&category=${state.category}&dificulty=${state.dificulty}`;
     fetchQuestions(url);
   }, []);
 
   return (
     <AppContext.Provider
-      value={{ ...state, nextQuestion, checkAnswer, closeModal }}
+      value={{
+        ...state,
+        nextQuestion,
+        checkAnswer,
+        closeModal,
+        table,
+        handleChange,
+      }}
     >
       {children}
     </AppContext.Provider>

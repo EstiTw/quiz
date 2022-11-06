@@ -15,6 +15,12 @@ function App() {
     checkAnswer,
   } = useGlobalContext();
 
+  return (
+    <main>
+      <SetupForm />
+    </main>
+  );
+
   if (isLoading) return <Loading />;
   if (isModalOpen) return <Modal />;
 
