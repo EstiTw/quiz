@@ -13,6 +13,7 @@ import {
 
 //TODO: encoding questions
 //TODO: adding session token
+//TODO: checking response code
 
 const table = {
   sports: 21,
@@ -26,12 +27,12 @@ const initializeState = {
   isLoading: true,
   waiting: true,
   isModalOpen: false,
-  questions: [],
   quiz: {
-    amount: 3,
+    amount: 5,
     category: "sports",
     difficulty: "easy",
   },
+  questions: [],
   index: 0,
   correct: 0,
 };
@@ -40,6 +41,10 @@ const AppContext = React.createContext();
 
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initializeState);
+
+  const closeModal = () => {
+    dispatch({ type: CLOSE_MODAL });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -55,15 +60,12 @@ const AppProvider = ({ children }) => {
     });
   };
 
-  const closeModal = () => {
-    dispatch({ type: CLOSE_MODAL });
+  const nextQuestion = () => {
+    dispatch({ type: NEXT_QUESTION });
   };
 
   const checkAnswer = (answer, question) => {
     dispatch({ type: CHECK_ANSWER, payload: { answer, question } });
-  };
-
-  const nextQuestion = () => {
     dispatch({ type: NEXT_QUESTION });
   };
 
@@ -72,8 +74,7 @@ const AppProvider = ({ children }) => {
     dispatch({ type: SET_WAITING });
     try {
       const { data } = await axios(url);
-      console.log(data, data.results);
-      //TODO: checking response code
+      // console.log(data, data.results);
       dispatch({ type: SET_QUESTIONS, payload: data.results });
     } catch (error) {
       console.log(error);
@@ -84,10 +85,10 @@ const AppProvider = ({ children }) => {
     <AppContext.Provider
       value={{
         ...state,
+        table,
         nextQuestion,
         checkAnswer,
         closeModal,
-        table,
         handleChange,
         handleSubmit,
       }}

@@ -29,11 +29,8 @@ const reducer = (state, action) => {
         (question) => question.question === action.payload.question
       );
 
-      let nextQuestion = state.index + 1;
       return {
         ...state,
-        index: nextQuestion === state.quiz.amount ? 0 : nextQuestion,
-        isModalOpen: nextQuestion === state.quiz.amount ? true : false,
         correct:
           action.payload.answer === correct_answer
             ? state.correct + 1
@@ -48,7 +45,7 @@ const reducer = (state, action) => {
         index: 0,
         correct: 0,
         quiz: {
-          amount: 10,
+          amount: 5,
           category: "sports",
           difficulty: "easy",
         },
