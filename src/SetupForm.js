@@ -2,12 +2,13 @@ import React from "react";
 import { useGlobalContext } from "./context";
 
 const SetupForm = () => {
-  const { table, quiz, handleChange, handleSubmit } = useGlobalContext();
+  const { quiz, handleChange, handleSubmit, isError } = useGlobalContext();
 
   return (
     <section className="quiz quiz-small">
       <h2>setup quiz</h2>
       <form className="setup-form" onSubmit={(e) => handleSubmit(e)}>
+        {/* amount */}
         <div className="form-control">
           <label htmlFor="amount">number of questions</label>
           <input
@@ -17,11 +18,11 @@ const SetupForm = () => {
             id="amount"
             min="1"
             max="50"
-            value={quiz.amount}
+            defaultValue={quiz.amount}
             onChange={(e) => handleChange(e)}
           />
         </div>
-
+        {/* category */}
         <div className="form-control">
           <label htmlFor="category">category</label>
           <select
@@ -30,13 +31,12 @@ const SetupForm = () => {
             name="category"
             onChange={(e) => handleChange(e)}
           >
-            {Object.keys(table).map((c, index) => (
-              <option key={index} value={c}>
-                {c}
-              </option>
-            ))}
+            <option value="sports">sports</option>
+            <option value="history">history</option>
+            <option value="politics">politics</option>
           </select>
         </div>
+        {/* difficulty */}
         <div className="form-control">
           <label htmlFor="dificulty">select difficulty</label>
           <select
@@ -50,6 +50,11 @@ const SetupForm = () => {
             <option value="hard">hard</option>
           </select>
         </div>
+        {isError && (
+          <p className="error">
+            can't generate questions, please try different options
+          </p>
+        )}
         <button className="submit-btn" onClick={(e) => handleSubmit(e)}>
           start
         </button>

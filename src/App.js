@@ -1,13 +1,13 @@
 import React from "react";
 import { useGlobalContext } from "./context";
-
 import SetupForm from "./SetupForm";
 import Loading from "./Loading";
 import Modal from "./Modal";
+
 function App() {
   const {
     isLoading,
-    waiting,
+    isWaiting,
     isModalOpen,
     questions,
     index,
@@ -16,12 +16,7 @@ function App() {
     checkAnswer,
   } = useGlobalContext();
 
-  if (waiting)
-    return (
-      <main>
-        <SetupForm />
-      </main>
-    );
+  if (isWaiting) return <SetupForm />;
   if (isLoading) return <Loading />;
 
   const { question, correct_answer, incorrect_answers } = questions[index];
@@ -41,7 +36,7 @@ function App() {
               <button
                 className="answer-btn"
                 key={index}
-                onClick={() => checkAnswer(answer, question)}
+                onClick={() => checkAnswer(answer === correct_answer)}
               >
                 {answer}
               </button>

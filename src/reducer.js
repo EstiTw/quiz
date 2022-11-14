@@ -6,16 +6,29 @@ import {
   CHECK_ANSWER,
   CLOSE_MODAL,
   HANDLE_CHANGE,
+  SET_ERROR,
 } from "./actions";
 
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_LOADING:
       return { ...state, isLoading: true };
+
     case SET_WAITING:
-      return { ...state, waiting: false };
+      return { ...state, isWaiting: action.payload };
+
+    case SET_ERROR:
+      return { ...state, isError: true };
+
     case SET_QUESTIONS:
-      return { ...state, isLoading: false, questions: action.payload };
+      return {
+        ...state,
+        isLoading: false,
+        isWaiting: false,
+        error: false,
+        questions: action.payload,
+      };
+
     case NEXT_QUESTION: {
       let nextQuestion = state.index + 1;
       return {
@@ -24,24 +37,19 @@ const reducer = (state, action) => {
         isModalOpen: nextQuestion === state.quiz.amount ? true : false,
       };
     }
-    case CHECK_ANSWER: {
-      const { correct_answer } = state.questions.find(
-        (question) => question.question === action.payload.question
-      );
 
+    case CHECK_ANSWER: {
       return {
         ...state,
-        correct:
-          action.payload.answer === correct_answer
-            ? state.correct + 1
-            : state.correct,
+        correct: action.payload ? state.correct + 1 : state.correct,
       };
     }
+
     case CLOSE_MODAL:
       return {
         ...state,
         isModalOpen: false,
-        waiting: true,
+        isWaiting: true,
         index: 0,
         correct: 0,
         quiz: {
@@ -51,8 +59,10 @@ const reducer = (state, action) => {
         },
         questions: [],
       };
+
     case HANDLE_CHANGE: {
-      const { name, value } = action.payload;
+      let { name, value } = action.payload;
+      if (name === "amount") value = +value; //convert string value to integer
       return { ...state, quiz: { ...state.quiz, [name]: value } };
     }
 

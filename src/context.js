@@ -9,11 +9,11 @@ import {
   CHECK_ANSWER,
   CLOSE_MODAL,
   HANDLE_CHANGE,
+  SET_ERROR,
 } from "./actions";
 
 //TODO: encoding questions
 //TODO: adding session token
-//TODO: checking response code
 
 const table = {
   sports: 21,
@@ -25,8 +25,9 @@ const API_ENDPOINT = "https://opentdb.com/api.php?";
 
 const initializeState = {
   isLoading: true,
-  waiting: true,
+  isWaiting: true,
   isModalOpen: false,
+  isError: false,
   quiz: {
     amount: 5,
     category: "sports",
@@ -42,8 +43,23 @@ const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initializeState);
 
-  const closeModal = () => {
-    dispatch({ type: CLOSE_MODAL });
+  const fetchQuestions = async (url) => {
+    dispatch({ type: SET_LOADING });
+    dispatch({ type: SET_WAITING, payload: false });
+
+    const response = await axios(url).catch((error) => console.log(error));
+
+    if (response) {
+      const data = response.data.results;
+      if (data.length > 0) dispatch({ type: SET_QUESTIONS, payload: data });
+      else {
+        dispatch({ type: SET_WAITING, payload: true });
+        dispatch({ type: SET_ERROR });
+      }
+    } else {
+      //set waiting false -> show setup form
+      dispatch({ type: SET_WAITING, payload: true });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -64,21 +80,13 @@ const AppProvider = ({ children }) => {
     dispatch({ type: NEXT_QUESTION });
   };
 
-  const checkAnswer = (answer, question) => {
-    dispatch({ type: CHECK_ANSWER, payload: { answer, question } });
+  const checkAnswer = (value) => {
+    dispatch({ type: CHECK_ANSWER, payload: value });
     dispatch({ type: NEXT_QUESTION });
   };
 
-  const fetchQuestions = async (url) => {
-    dispatch({ type: SET_LOADING });
-    dispatch({ type: SET_WAITING });
-    try {
-      const { data } = await axios(url);
-      // console.log(data, data.results);
-      dispatch({ type: SET_QUESTIONS, payload: data.results });
-    } catch (error) {
-      console.log(error);
-    }
+  const closeModal = () => {
+    dispatch({ type: CLOSE_MODAL });
   };
 
   return (
