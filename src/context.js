@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { useContext, useReducer } from "react";
+import axios from "axios";
 import reducer from "./reducer";
 import {
   SET_LOADING,
@@ -12,7 +12,6 @@ import {
   SET_ERROR,
 } from "./actions";
 
-//TODO: encoding questions
 //TODO: adding session token
 
 const table = {

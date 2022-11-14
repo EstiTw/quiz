@@ -31,11 +31,9 @@ const reducer = (state, action) => {
 
     case NEXT_QUESTION: {
       let nextQuestion = state.index + 1;
-      return {
-        ...state,
-        index: nextQuestion === state.quiz.amount ? 0 : nextQuestion,
-        isModalOpen: nextQuestion === state.quiz.amount ? true : false,
-      };
+      if (nextQuestion === state.quiz.amount)
+        return { ...state, index: 0, isModalOpen: true };
+      else return { ...state, index: nextQuestion };
     }
 
     case CHECK_ANSWER: {
@@ -50,7 +48,6 @@ const reducer = (state, action) => {
         ...state,
         isModalOpen: false,
         isWaiting: true,
-        index: 0,
         correct: 0,
         quiz: {
           amount: 5,
